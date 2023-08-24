@@ -23,7 +23,10 @@ end
 // writes are sequential (clocked)
   always_ff @(posedge clk)
     if(wr_en)				   // anything but stores or no ops
+	begin
       core[wr_addr] <= dat_in; 
+      $display("  reg %b has been changed to %d   \n", wr_addr, dat_in);
+	end
 
 
 endmodule

@@ -16,13 +16,15 @@ always_comb begin
   zero = !rslt;
   pari = ^rslt;
 $write(" alu_cmd = %b", alu_cmd[4:2]);
-case(alu_cmd)
-	'b00000:	 
-	$write(" the integer to add is   %b or %d", inB, inB);
-endcase
+
   case(alu_cmd[4:2])
 	'b000:
-		rslt = inA + inB;
+		if (alu_cmd[1:0] == 'b00) begin
+			rslt = inB;
+			$write(" the integer to add is   %b or %d", inB, inB);
+		end
+		else
+			rslt = inA + inB;
 
   endcase
 $write (" result = %d", rslt);

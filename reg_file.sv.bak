@@ -17,13 +17,16 @@ module reg_file #(parameter pw=4)(
   assign datA_out = core[rd_addrA];
   assign datB_out = core[rd_addrB];
 always @(wr_addr) begin
-    $write("    destR %b", wr_addr);
+    $write(" destR %b", wr_addr);
 end
 
 // writes are sequential (clocked)
   always_ff @(posedge clk)
     if(wr_en)				   // anything but stores or no ops
+	begin
       core[wr_addr] <= dat_in; 
+      $display("  reg %b has been changed to %d   \n", wr_addr, dat_in);
+	end
 
 
 endmodule
