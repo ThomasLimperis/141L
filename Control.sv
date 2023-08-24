@@ -31,16 +31,39 @@ always_comb begin
 // in the first case of doing an ADD with R1, R1, R1 everything is set to 0 except regWrite
 $write("     opcode = %b", instr);
 
-case(instr)
-	'b000: begin
-	//add instruction
-	ALUOp = 'b000;
-	
-	end
-	default: begin
-        ALUOp = 'b111; // default to pass A operation
-    end
-
+case(instr)    // override defaults with exceptions
+  'b000:  begin  // add operation
+             ALUOp      = 'b000; // No special control signals needed for add
+           end
+  'b001:  begin  // beq operation
+             Branch = 'b1; 
+    		ALUOp      = 'b001;
+           end
+  'b010:  begin  // sb operation
+             MemWrite = 'b1;      
+             RegWrite = 'b0;      // Don't load reg_file
+    		ALUOp      = 'b010;
+           end
+  'b011:  begin  // lbu operation
+             MemtoReg = 'b1;      // Route memory instead of ALU to reg_file data in
+    		ALUOp      = 'b011;
+           end
+  'b100:  begin  // xor operation
+             ALUOp      = 'b100;
+           end
+  'b101:  begin  // or operation
+             ALUOp      = 'b101;
+           end
+  'b110:  begin  // and operation
+             ALUOp      = 'b110;
+           end
+  'b111:  begin  // srl operation
+             ALUOp      = 'b111;
+           end
+  default: begin
+             
+           end
+// ...
 endcase
    $write("  ALUOp = %b", ALUOp);
      // $write("  RegDst = %b", RegDst);
