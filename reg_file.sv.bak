@@ -17,7 +17,7 @@ module reg_file #(parameter pw=4)(
   assign datA_out = core[rd_addrA];
   assign datB_out = core[rd_addrB];
 always @(wr_addr) begin
-    $write(" destR %b", wr_addr);
+    $write("    destR %b", wr_addr);
 end
 
 // writes are sequential (clocked)

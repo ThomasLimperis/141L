@@ -123,6 +123,6 @@ what is datA,datB, regfile_dat
       sc_in <= sc_o;
   end
 
-  assign done = prog_ctr == 10; //was 128
+  assign done = prog_ctr == 5; //was 128
  
 endmodule

@@ -1,7 +1,7 @@
 // combinational -- no clock
 // sample -- change as desired
 module alu(
-  input[2:0] alu_cmd,    // ALU instructions
+  input[4:0] alu_cmd,    // ALU instructions
   input[7:0] inA, inB,	 // 8-bit wide data path
   input      sc_i,       // shift_carry in
   output logic[7:0] rslt,
@@ -15,16 +15,20 @@ always_comb begin
   sc_o = 'b0;
   zero = !rslt;
   pari = ^rslt;
-$write("    alu_cmd = %b", alu_cmd);
-  case(alu_cmd)
+$write(" alu_cmd = %b", alu_cmd[4:2]);
+case(alu_cmd)
+	'b00000:	 
+	$write(" the integer to add is   %b or %d", inB, inB);
+endcase
+  case(alu_cmd[4:2])
 	'b000:
 		rslt = inA + inB;
 
   endcase
-$write ("  result = %d", rslt);
-$write("  inA = %b", inA);
-$write("  inB = %b", inB);
-$display("  alu_cmd = %b", alu_cmd);
+$write (" result = %d", rslt);
+$write(" inA = %b", inA);
+$write(" inB = %b\n", inB);
+
  
 
 end

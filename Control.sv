@@ -1,9 +1,10 @@
 // control decoder
 module Control #(parameter opwidth = 3, mcodebits = 3)(
-  input [mcodebits-1:0] instr,    // subset of machine code (any width you need)
+  input [5-1:0] instr,    // subset of machine code (any width you need) //changed from mcodebits
   output logic RegDst, Branch, 
      MemtoReg, MemWrite, ALUSrc, RegWrite,
-  output logic[opwidth-1:0] ALUOp);	   // for up to 8 ALU operations
+  output logic[opwidth-1:0] ALUOp);	//changed from opwidth   // for up to 8 ALU operations
+  
 
 always_comb begin
 // defaults
@@ -14,6 +15,7 @@ always_comb begin
   RegWrite  =	'b1;   // 0: for store or no op  1: most other operations 
   MemtoReg  =	'b0;   // 1: load -- route memory instead of ALU to reg_file data in
   ALUOp	    =   'b111; // y = a+0;
+ 
 
 // sample values only -- use what you need
 /*case(instr)    // override defaults with exceptions
@@ -29,9 +31,9 @@ always_comb begin
 
 //Depending on the instructions and registers used, the control values above will be set to either 0 or 1
 // in the first case of doing an ADD with R1, R1, R1 everything is set to 0 except regWrite
-$write("     opcode = %b", instr);
+$write(" opcode = %b", instr[4:2]);
 
-case(instr)    // override defaults with exceptions
+case(instr[4:2])    // override defaults with exceptions
   'b000:  begin  // add operation
              ALUOp      = 'b000; // No special control signals needed for add
            end
@@ -65,6 +67,11 @@ case(instr)    // override defaults with exceptions
            end
 // ...
 endcase
+case(instr)    // override defaults with exceptions
+  'b00000:  begin  // add operation
+             ALUSrc      = 'b1; // No special control signals needed for add
+           end
+endcase
    $write("  ALUOp = %b", ALUOp);
      // $write("  RegDst = %b", RegDst);
     $write("  Branch = %b", Branch);
@@ -72,7 +79,7 @@ endcase
     $write("  MemWrite = %b", MemWrite);
     $write("  ALUSrc = %b", ALUSrc);
     $write("  RegWrite = %b", RegWrite);
-
+    $write("  ALUSrc (li bit) = %b", ALUSrc);
 end
 
 
