@@ -1,13 +1,12 @@
 module milestone2_quicktest_tb();
 
-bit clk, reset, li;
+bit clk, reset;
 wire done;
 logic error[2];
 
 top_level dut(
   .clk,
   .reset,
-   .li,
   .done);
 
 

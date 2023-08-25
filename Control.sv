@@ -1,18 +1,18 @@
 // control decoder
 module Control #(parameter opwidth = 3, mcodebits = 3)(
-  input [5-1:0] instr,    // subset of machine code (any width you need) //changed from mcodebits
-  output logic RegDst, Branch, 
-     MemtoReg, MemWrite, ALUSrc, RegWrite,
-  output logic[opwidth-1:0] ALUOp);	//changed from opwidth   // for up to 8 ALU operations
+  input [7-1:0] instr,    // subset of machine code (any width you need) //changed from mcodebits
+  output logic  Branch, 
+     MemtoReg, MemWrite, ALUSrc, RegWrite,li,
+  output logic[opwidth-1:0] ALUOp, [1:0]regDst);	//changed from opwidth   // for up to 8 ALU operations
   
 
 always_comb begin
 // defaults
-  RegDst 	=   'b0;   // 1: not in place  just leave 0
+  //RegDst 	=   'b00;   // 1: not in place  just leave 0
   Branch 	=   'b0;   // 1: branch (jump)
   MemWrite  =	'b0;   // 1: store to memory
   ALUSrc 	=	'b0;   // 1: immediate  0: second reg file output
-  RegWrite  =	'b1;   // 0: for store or no op  1: most other operations 
+  RegWrite  =	'b0;   // 0: for store or no op  1: most other operations 
   MemtoReg  =	'b0;   // 1: load -- route memory instead of ALU to reg_file data in
   ALUOp	    =   'b111; // y = a+0;
  
@@ -31,11 +31,12 @@ always_comb begin
 
 //Depending on the instructions and registers used, the control values above will be set to either 0 or 1
 // in the first case of doing an ADD with R1, R1, R1 everything is set to 0 except regWrite
-$write(" opcode = %b", instr[4:2]);
+$write(" opcode = %b", instr[6:4]);
 
-case(instr[4:2])    // override defaults with exceptions
+case(instr[6:4])    // override defaults with exceptions
   'b000:  begin  // add operation
              ALUOp      = 'b000; // No special control signals needed for add
+	     RegWrite = 'b1;
            end
   'b001:  begin  // beq operation
              Branch = 'b1; 
@@ -67,11 +68,27 @@ case(instr[4:2])    // override defaults with exceptions
            end
 // ...
 endcase
-case(instr)    // override defaults with exceptions
-  'b00000:  begin  // add operation
-             ALUSrc      = 'b1; // No special control signals needed for add
-           end
-endcase
+if (li =='b0) begin
+	if (instr[6:2] == 'b00000) begin    // override defaults with exceptions
+  //'b00000:  begin  // add operation
+	ALUSrc      = 'b0; // No special control signals needed for add
+	regDst = instr[1:0];
+        Branch = 'b0;
+        MemtoReg = 'b0;
+       MemWrite = 'b0;
+       RegWrite = 'b0;
+       li = 'b1;
+	ALUOp = 'b000;
+	$display("\nWe are now loading the next machine code to do our li on reg %b",regDst[1:0]);
+        end
+end else begin
+  li = 'b0;
+  RegWrite = 'b1;
+  ALUOp = 'b000;
+  ALUSrc = 'b1;
+end
+
+//endcase
    $write("  ALUOp = %b", ALUOp);
      // $write("  RegDst = %b", RegDst);
     $write("  Branch = %b", Branch);

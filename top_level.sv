@@ -1,13 +1,15 @@
 // sample top level design
 module top_level(
   input        clk, reset, 
-  output logic done,li);
+  output logic done);
   parameter D = 12,             // program counter width
    //changing A from 3 to 5 for 00000 opcode test
     A = 3;             		  // ALU command bit width 
   wire[D-1:0] target, 			  // jump 
               prog_ctr;
   wire RegWrite = 'b1;
+  wire [1:0] regDst;
+  wire li = 'b0;
   wire[7:0]   datA,datB,		  // from RegFile
               muxB, 
 			  rslt,               // alu output
@@ -26,9 +28,9 @@ module top_level(
   
   wire reg_file = 'b1;
   //alu cmd  changing was A - 1
-  wire[5-1:0] alu_cmd;
+  wire[7-1:0] alu_cmd;
   wire[8:0]   mach_code;          // machine code
-  wire[8:0]   mach_code2;          // machine code
+  //wire[8:0]   mach_code2;          // machine code
   wire[1:0] rd_addrA, rd_addrB, rd_addrC;    // address pointers to reg_file
 // fetch subassembly
   PC #(.D(D)) 					  // D sets program counter width
@@ -43,21 +45,22 @@ module top_level(
 
 // contains machine code
   instr_ROM ir1(.prog_ctr,
-               .mach_code,
-		.mach_code2);
+               .mach_code);
+		//.//mach_code2);
   //$display("Machine Code in Top Level = %b", mach_code);
 
 
-assign alu_cmd  = mach_code[8:4];
+assign alu_cmd  = mach_code[8:2];
 // control decoder
-  Control ctl1(.instr(alu_cmd),
-  .RegDst  (), 
+  Control ctl1(.instr(alu_cmd), 
   .Branch  (relj)  , 
   .MemWrite , 
   .ALUSrc   , 
-  .RegWrite   ,     
+  .RegWrite   , 
+  .li,    
   .MemtoReg(),
-  .ALUOp());
+  .ALUOp(),
+   .regDst());
   
 
 
@@ -72,7 +75,7 @@ what is datA,datB, regfile_dat
   assign rd_addrA = mach_code[1:0]; //2bit
   assign rd_addrB = mach_code[3:2];  //2bit 
   assign rd_addrC = mach_code[5:4];  //2bit
-  assign immed = mach_code2[7:0];
+  assign immed = mach_code[7:0];
  // assign alu_cmd  = mach_code[8:6];  //3bit
   //wr_en regwrite 1 bit
 
@@ -101,7 +104,10 @@ what is datA,datB, regfile_dat
   alu alu1(.alu_cmd(alu_cmd),
          .inA    (datA),
 		 .inB    (muxB),
-		 .sc_i   (sc),   // output from sc register
+		 .sc_i   (sc),
+		 .li,   // output from sc register
+		 .ALUSrc,
+		.regDst,
 		 .rslt       ,
 		 .sc_o   (sc_o), // input to sc register
 		 .pari ,
