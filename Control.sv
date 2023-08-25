@@ -11,7 +11,7 @@ always_comb begin
   //RegDst 	=   'b00;   // 1: not in place  just leave 0
   Branch 	=   'b0;   // 1: branch (jump)
   MemWrite  =	'b0;   // 1: store to memory
-  ALUSrc 	=	'b0;   // 1: immediate  0: second reg file output
+  ALUSrc ='b0;   // 1: immediate  0: second reg file output
   RegWrite  =	'b0;   // 0: for store or no op  1: most other operations 
   MemtoReg  =	'b0;   // 1: load -- route memory instead of ALU to reg_file data in
   ALUOp	    =   'b111; // y = a+0;
@@ -68,10 +68,15 @@ case(instr[6:4])    // override defaults with exceptions
            end
 // ...
 endcase
+if (li == 'b0 && ALUSrc == 'b1) begin
+	ALUSrc = 'b0;
+end
+
 if (li =='b0) begin
-	if (instr[6:2] == 'b00000) begin    // override defaults with exceptions
+	ALUSrc      = 'b0;
+	if (instr[6:2] == 'b00000 ) begin    // override defaults with exceptions
   //'b00000:  begin  // add operation
-	ALUSrc      = 'b0; // No special control signals needed for add
+	 // No special control signals needed for add
 	regDst = instr[1:0];
         Branch = 'b0;
         MemtoReg = 'b0;
@@ -82,6 +87,7 @@ if (li =='b0) begin
 	$display("\nWe are now loading the next machine code to do our li on reg %b",regDst[1:0]);
         end
 end else begin
+  $display("LI IS ONEEEEEE");
   li = 'b0;
   RegWrite = 'b1;
   ALUOp = 'b000;

@@ -10,6 +10,7 @@ module top_level(
   wire RegWrite = 'b1;
   wire [1:0] regDst;
   wire li = 'b0;
+  //wire ALUSrc = 'b0;
   wire[7:0]   datA,datB,		  // from RegFile
               muxB, 
 			  rslt,               // alu output
@@ -22,8 +23,9 @@ module top_level(
         zero,
 		sc_clr,
 		sc_en,
-        MemWrite,
-        ALUSrc;		              // immediate switch
+        MemWrite;
+  wire ALUSrc;
+        	              // immediate switch
 
   
   wire reg_file = 'b1;
@@ -51,13 +53,14 @@ module top_level(
 
 
 assign alu_cmd  = mach_code[8:2];
+
 // control decoder
   Control ctl1(.instr(alu_cmd), 
   .Branch  (relj)  , 
-  .MemWrite , 
-  .ALUSrc   , 
+  .MemWrite ,
   .RegWrite   , 
   .li,    
+   .ALUSrc,
   .MemtoReg(),
   .ALUOp(),
    .regDst());
@@ -107,11 +110,11 @@ what is datA,datB, regfile_dat
 		 .sc_i   (sc),
 		 .li,   // output from sc register
 		 .ALUSrc,
-		.regDst,
+		.regDst(),
 		 .rslt       ,
 		 .sc_o   (sc_o), // input to sc register
 		 .pari ,
-		.zero );  
+		.zero  );  
 
   dat_mem dm1(.dat_in(datB)  ,  // from reg_file
              .clk           ,

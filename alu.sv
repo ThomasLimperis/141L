@@ -3,8 +3,8 @@
 module alu(
   input[6:0] alu_cmd,    // ALU instructions
   input[7:0] inA, inB,	 // 8-bit wide data path
-  input      sc_i, li, ALUSrc ,    // shift_carry in //if ALUSrc we know we are doing li
-  input [1:0] regDst,
+  input      sc_i, li,  ALUSrc ,    // shift_carry in //if ALUSrc we know we are doing li
+  output logic [1:0]regDst,
   output logic[7:0] rslt,
   output logic sc_o,     // shift_carry out
                pari,     // reduction XOR (output)
@@ -20,6 +20,7 @@ $write(" alu_cmd = %b", alu_cmd[6:4]);
 if (ALUSrc == 'b1) begin
 	rslt = inB;
 	$write(" the integer to add is   %b or %d into regDst %b", inB, inB,regDst[1:0]);
+	//ALUSrc = 'b0;
 end else begin
 if (li =='b0) begin
   case(alu_cmd[6:4])
