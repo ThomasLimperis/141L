@@ -25,7 +25,6 @@ module top_level(
 		sc_en,
         MemWrite;
   wire ALUSrc;
-  wire final_flag = 'b0;
         	              // immediate switch
 
   

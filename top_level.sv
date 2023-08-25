@@ -13,8 +13,8 @@ module top_level(
   //wire ALUSrc = 'b0;
   wire[7:0]   datA,datB,		  // from RegFile
               muxB, 
-			  rslt,               // alu output
-              immed;
+			  rslt;               // alu output
+       wire[6:0]       immed;
   logic sc_in,   				  // shift/carry out from/to ALU
    		pariQ,              	  // registered parity flag from ALU
 		zeroQ;                    // registered zero flag from ALU 
@@ -78,7 +78,7 @@ what is datA,datB, regfile_dat
   assign rd_addrA = mach_code[1:0]; //2bit
   assign rd_addrB = mach_code[3:2];  //2bit 
   assign rd_addrC = mach_code[5:4];  //2bit
-  assign immed = mach_code[7:0];
+  assign immed = mach_code[6:0];
  // assign alu_cmd  = mach_code[8:6];  //3bit
   //wr_en regwrite 1 bit
 
