@@ -2,8 +2,9 @@
 module Control #(parameter opwidth = 3, mcodebits = 3)(
   input [7-1:0] instr,    // subset of machine code (any width you need) //changed from mcodebits
   output logic  Branch, 
-     MemtoReg, MemWrite, ALUSrc, RegWrite,li,
-  output logic[opwidth-1:0] ALUOp, [1:0]regDst);	//changed from opwidth   // for up to 8 ALU operations
+     MemtoReg, MemWrite, ALUSrc, RegWrite,li,sb,
+  output logic[opwidth-1:0] ALUOp, 
+  output logic [1:0]regDst);	//changed from opwidth   // for up to 8 ALU operations
   
 
 always_comb begin
@@ -18,20 +19,21 @@ always_comb begin
  
 
 // sample values only -- use what you need
-/*case(instr)    // override defaults with exceptions
-  'b0000:  begin					// store operation
-               MemWrite = 'b1;      // write to data mem
+case(instr[6:4])    // override defaults with exceptions
+  'b010:  begin					// store operation
+               MemWrite = 'b0;      // write to data mem
                RegWrite = 'b0;      // typically don't also load reg_file
 			 end
-  'b00001:  ALUOp      = 'b000;  // add:  y = a+b
-  'b00010:  begin				  // load
+  //'b0001:  ALUOp      = 'b000;  // add:  y = a+b
+  'b111:  begin				  // load
 			   MemtoReg = 'b1;    // 
              end
+endcase
 // ...*/
 
 //Depending on the instructions and registers used, the control values above will be set to either 0 or 1
 // in the first case of doing an ADD with R1, R1, R1 everything is set to 0 except regWrite
-$write(" opcode = %b", instr[6:4]);
+//$write(" opcode = %b", instr[6:4]);
 
 case(instr[6:4])    // override defaults with exceptions
   'b000:  begin  // add operation
@@ -46,6 +48,7 @@ case(instr[6:4])    // override defaults with exceptions
              MemWrite = 'b1;      
              RegWrite = 'b0;      // Don't load reg_file
     		ALUOp      = 'b010;
+		sb = 'b1;
            end
   'b011:  begin  // lbu operation
              MemtoReg = 'b1;      // Route memory instead of ALU to reg_file data in
@@ -80,14 +83,14 @@ if (li =='b0) begin
 	regDst = instr[1:0];
         Branch = 'b0;
         MemtoReg = 'b0;
-       MemWrite = 'b0;
+       //MemWrite = 'b0;
        RegWrite = 'b0;
        li = 'b1;
 	ALUOp = 'b000;
-	$display("\nWe are now loading the next machine code to do our li on reg %b",regDst[1:0]);
+	//$display("\n li = 1,  T%b",regDst[1:0]);
         end
 end else begin
-  $display("LI IS ONEEEEEE");
+ // $display("LI IS ONEEEEEE");
   li = 'b0;
   RegWrite = 'b1;
   ALUOp = 'b000;
@@ -95,14 +98,14 @@ end else begin
 end
 
 //endcase
-   $write("  ALUOp = %b", ALUOp);
+  // $write("  ALUOp = %b", ALUOp);
      // $write("  RegDst = %b", RegDst);
-    $write("  Branch = %b", Branch);
-    $write("  MemtoReg = %b", MemtoReg);
-    $write("  MemWrite = %b", MemWrite);
-    $write("  ALUSrc = %b", ALUSrc);
-    $write("  RegWrite = %b", RegWrite);
-    $write("  ALUSrc (li bit) = %b", ALUSrc);
+   // $write("  Branch = %b", Branch);
+   // $write("  MemtoReg = %b", MemtoReg);
+   // $write("  MemWrite = %b", MemWrite);
+    //$write("  ALUSrc = %b", ALUSrc);
+   // $write("  RegWrite = %b", RegWrite);
+    //$write("  ALUSrc (li bit) = %b", ALUSrc);
 end
 
 

@@ -9,10 +9,10 @@ module instr_ROM #(parameter D=12)(
   initial begin
     // Load the program into core
     $readmemb("mach_code.txt", core);
-    $display("Core[0] = %b", core[0]);
-    $display("Core[1] = %b", core[1]);
-    $display("Core[2] = %b", core[2]);
-    $display("Core[3] = %b", core[3]);
+   // $display("Core[0] = %b", core[0]);
+    //$display("Core[1] = %b", core[1]);
+    //$display("Core[2] = %b", core[2]);
+    //$display("Core[3] = %b", core[3]);
   end
 
   always_comb begin

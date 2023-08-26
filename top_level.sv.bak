@@ -9,12 +9,17 @@ module top_level(
               prog_ctr;
   wire RegWrite = 'b1;
   wire [1:0] regDst;
-  wire li = 'b0;
+  wire li = 'b0,sb = 'b0;
+
+
+
+   wire m ;
+
   //wire ALUSrc = 'b0;
-  wire[7:0]   datA,datB,		  // from RegFile
+  wire[7:0]   datA,datB, dat_in, datA_out, datB_out,		  // from RegFile
               muxB, 
-			  rslt,               // alu output
-              immed;
+			  rslt;               // alu output
+       wire[6:0]       immed;
   logic sc_in,   				  // shift/carry out from/to ALU
    		pariQ,              	  // registered parity flag from ALU
 		zeroQ;                    // registered zero flag from ALU 
@@ -22,11 +27,11 @@ module top_level(
   wire  pari,
         zero,
 		sc_clr,
-		sc_en,
-        MemWrite;
+		sc_en;
+       wire MemWrite = 'b1;
   wire ALUSrc;
         	              // immediate switch
-
+  wire[7:0] i,val;
   
   wire reg_file = 'b1;
   //alu cmd  changing was A - 1
@@ -59,11 +64,11 @@ assign alu_cmd  = mach_code[8:2];
   .Branch  (relj)  , 
   .MemWrite ,
   .RegWrite   , 
-  .li,    
+  .li, .sb,   
    .ALUSrc,
   .MemtoReg(),
   .ALUOp(),
-   .regDst());
+   .regDst);
   
 
 
@@ -75,10 +80,10 @@ write_address = addrC
 what is datA,datB, regfile_dat
 
 */
-  assign rd_addrA = mach_code[1:0]; //2bit
+assign rd_addrA = mach_code[1:0]; //2bit   //addr
   assign rd_addrB = mach_code[3:2];  //2bit 
   assign rd_addrC = mach_code[5:4];  //2bit
-  assign immed = mach_code[7:0];
+  assign immed = mach_code[6:0];
  // assign alu_cmd  = mach_code[8:6];  //3bit
   //wr_en regwrite 1 bit
 
@@ -86,13 +91,16 @@ what is datA,datB, regfile_dat
 
 
   reg_file #(.pw(4)) rf1(
-              .dat_in(RegWrite),	   // loads, most ops //regfile_dat doesnt exist
-              .clk         ,
+              .dat_in(rslt),
+	      .regDst,	   // loads, most ops //regfile_dat doesnt exist
+              .clk   ,
               .wr_en   (RegWrite),
-              .rd_addrA(rd_addrA),
-              .rd_addrB(rd_addrB),
-              .wr_addr (rd_addrC),      // in place operation
-              .datA_out(datA),
+		.sb,
+	      .wr_addr (rd_addrC),
+              .rd_addrA,
+              .rd_addrB,
+                    // in place operation
+            .datA_out(datA),
               .datB_out(datB)); 
 
   //$display("rd_addrA from Machine Code = %b", rd_addrA);
@@ -102,7 +110,7 @@ what is datA,datB, regfile_dat
 
 
 
-  assign muxB = ALUSrc? immed : datB;
+  //assign muxB = ALUSrc? immed : datB;
 
   alu alu1(.alu_cmd(alu_cmd),
          .inA    (datA),
@@ -110,16 +118,16 @@ what is datA,datB, regfile_dat
 		 .sc_i   (sc),
 		 .li,   // output from sc register
 		 .ALUSrc,
-		.regDst(),
 		 .rslt       ,
 		 .sc_o   (sc_o), // input to sc register
 		 .pari ,
 		.zero  );  
 
-  dat_mem dm1(.dat_in(datB)  ,  // from reg_file
+
+  dat_mem dm1(.dat_in(datB) ,  // from reg_file
              .clk           ,
-			 .wr_en  (MemWrite), // stores
-			 .addr   (datA),
+			 .wr_en  (MemWrite),.sb, // stores
+			 .addr(datA),
              .dat_out());
 
 // registered flags from ALU

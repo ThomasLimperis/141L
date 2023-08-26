@@ -21,7 +21,7 @@ initial begin
   ////dut.dm1.core[1] = 8'b11001100;
   //dut.dm1.core[3] =	8'b11000011;
   //dut.dm1.core[4] = 8'b01010101;
- // reset = 0;
+  reset = 0;
   #10 reset = 1;
   #10 reset = 0;
   //#10 //$display("\nReset signal in Testbench = %b", reset);

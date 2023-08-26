@@ -1,6 +1,6 @@
 module instr_ROM #(parameter D=12)(
   input [D-1:0] prog_ctr, // Address pointer
-  output logic [8:0] mach_code,
+  output logic [8:0] mach_code
   //output logic [8:0] mach_code2
 );
 
@@ -9,17 +9,17 @@ module instr_ROM #(parameter D=12)(
   initial begin
     // Load the program into core
     $readmemb("mach_code.txt", core);
-    $display("Core[0] = %b", core[0]);
-    $display("Core[1] = %b", core[1]);
-    $display("Core[2] = %b", core[2]);
-    $display("Core[3] = %b", core[3]);
+   // $display("Core[0] = %b", core[0]);
+    //$display("Core[1] = %b", core[1]);
+    //$display("Core[2] = %b", core[2]);
+    //$display("Core[3] = %b", core[3]);
   end
 
   always_comb begin
     mach_code = core[prog_ctr];
     //mach_code2 = core[prog_ctr +1];
     // Display the machine code instruction
-    $write("prog_ctr = %d, Machine Code = %b", prog_ctr, mach_code);
+    //$write("prog_ctr = %d, Machine Code = %b", prog_ctr, mach_code);
   end
 
 endmodule
