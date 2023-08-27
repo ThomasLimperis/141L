@@ -16,7 +16,7 @@ module dat_mem (
      $display("addr %d dat_in %b", addr, dat_in);
     if(wr_en) begin
         core[addr] <= dat_in;
-        $display("Data written to core[%0d] = %b", addr, dat_in);
+        $display("Data written to core[%0d] = %d", addr, dat_in);
     end
   end
 

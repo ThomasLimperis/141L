@@ -17,7 +17,7 @@ module reg_file #(parameter pw=4)(
 // reads are combinational
 
   assign datA_out = core[rd_addrA];
-  assign datB_out =  core[rd_addrA];
+  assign datB_out =  core[wr_addr];
 
 always @(wr_addr) begin
     $write(" wr_addr %b", wr_addr);
@@ -31,10 +31,10 @@ end
 	begin
       if (regDst[1:0] == 'b00) begin
       core[wr_addr] <= dat_in; 
-      $display(" dat_in  %b   T (wr_addr)%b\n", dat_in,wr_addr[1:0]);
+      $display(" dat_in  %d   T (wr_addr)%b\n", dat_in,wr_addr[1:0]);
       end else begin
 	core[regDst] <= dat_in; 
-	$display(" dat_in  %b   T (regDst)%b\n", dat_in,regDst[1:0]);
+	$display(" dat_in  db   T (regDst)%b\n", dat_in,regDst[1:0]);
 	//wr_addr = regDst;
 	end
 end

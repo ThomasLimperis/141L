@@ -10,12 +10,7 @@ module dat_mem (
 
 // reads are combinational; no enable or clock required
   assign dat_out = core[addr];
-always_ff @(posedge clk) begin
- if(wr_en  && addr == 'b00001000') begin
 
-  $display("Data written to core[%0d] = %b", addr, dat_in);
- end
-end
 // writes are sequential (clocked) -- occur on stores or pushes 
   always_ff @(posedge clk) begin
      $display("addr %d dat_in %b", addr, dat_in);
